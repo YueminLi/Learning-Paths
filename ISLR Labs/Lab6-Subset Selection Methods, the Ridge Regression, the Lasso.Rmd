@@ -1,0 +1,50 @@
+---
+title: "Lab 6-Subset Selection Methods, the Ridge Regression, the Lasso"
+output: html_document
+---
+```{r}
+install.packages('ISLR')
+install.packages('leaps')
+```
+
+```{r}
+library(ISLR)
+library(leaps)
+```
+
+# Subset Selection Methods
+# Best Subset Selection
+```{r}
+fix(Hitters)
+names(Hitters)
+dim(Hitters)
+sum(is.na(Hitters$Salary))
+# remove NAs
+Hitters = na.omit(Hitters)
+dim(Hitters)
+sum(is.na(Hitters))
+```
+
+```{r}
+regfit.full = regsubsets(Salary ~ ., Hitters)
+summary(regfit.full)
+regfit.full = regsubsets(Salary ~ ., data=Hitters, nvmax=19)
+reg.summary = summary(regfit.full)
+
+# plot RSS, adjusted R-square
+par(mfrow = c(2,2))
+plot(reg.summary$rss, xlab="Number of Variables", ylab="RSS")
+plot(reg.summary$adjr2, xlab="Number of Variables", ylab="Adjusted RSq")
+
+# identify the point with maximum adjusted R-square
+which.max(reg.summary$adjr2)
+points(11, reg.summary$adjr2[11], col="red", cex=2, pch=20)
+
+# plot Cp and BIC and identify the point with minimum value
+plot(reg.summary$cp, xlab="Number of Variables", ylab="Cp")
+which.min(reg.summary$cp)
+points(10, reg.summary$cp[10], col="red", cex=2, pch=20)
+
+plot(reg.summary$bic, xlab="Number of Variables", ylab="BIC")
+points(6, reg.summary$bic[6], col="red", cex=2, pch=20)
+```
