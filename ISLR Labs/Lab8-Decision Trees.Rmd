@@ -1,0 +1,54 @@
+---
+title: "Lab 8-Decision Trees"
+output: html_document
+---
+
+# install packages
+```{r}
+install.packages("tree")
+install.packages("ISLR")
+```
+
+```{r}
+library(tree)
+library(ISLR)
+```
+
+# Fitting Classification Trees
+```{r}
+attach(Carseats)
+# recode Sales as a binary variable
+High = ifelse(Sales<=8, "No", "Yes")
+# merge High with the data
+Carseats = data.frame(Carseats, High)
+
+# fit a classification tree to predict High using all variables but Sales
+tree.carseats = tree(High ~.-Sales, Carseats)
+tree.carseats
+
+plot(tree.carseats)
+
+# split train and test set
+set.seed(2)
+train = sample(1:nrow(Carseats), 200)
+Carseats.test = Carseats[-train,]
+High.test = High[-train]
+tree.carseats = tree(High~.-Sales, Carseats, subset=train)
+tree.pred = predict(tree.carseats, Carseats.test, type="class")
+table(tree.pred, High.test)
+
+# pruning tree?
+set.seed(3)
+cv.carseats = cv.tree(tree.carseats, FUN=prune.misclass)
+names(cv.carseats)
+cv.carseats
+```
+
+
+
+
+
+
+
+
+
